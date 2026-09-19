@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: real-estate-recon-agent
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
