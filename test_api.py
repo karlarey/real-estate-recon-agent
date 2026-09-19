@@ -31,13 +31,13 @@ def get(path):
         return r.status, json.loads(r.read().decode())
 
 
-def post_json(path, body):
+def post_json(path, body, timeout=20):
     req = urllib.request.Request(
         BASE + path, data=json.dumps(body).encode(),
         headers={"Content-Type": "application/json"}, method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status, json.loads(r.read().decode())
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read().decode())
@@ -250,7 +250,7 @@ def main():
     check("chat status gives a hint when offline",
           body.get("available") or bool(body.get("hint")), str(body))
 
-    status, body = post_json("/api/chat", {"question": "which tenants are past due?"})
+    status, body = post_json("/api/chat", {"question": "which tenants are past due?"}, timeout=90)
     check("POST /api/chat returns 200", status == 200, str(status))
     check("chat returns an answer field", "answer" in body, str(body)[:160])
     check("chat reports its source", "source" in body, str(body)[:160])
