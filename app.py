@@ -506,6 +506,11 @@ td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pos{color:#6ee7a0}
 .neg{color:#f87171}
 .hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 4px}
+.filters select,.filters input{padding:6px 8px;font:inherit;font-size:12px;background:#0f1115;color:#e6e8eb;border:1px solid #333a46;border-radius:7px}
+.filters input::placeholder{color:#6b7280}
+.filters .count{margin-left:auto;color:#9aa3ad;font-size:12px;white-space:nowrap}
+.filters .clear{background:#262b35;color:#d7dbe0;padding:6px 10px;font-size:12px}
 .wrap.agent-open{max-width:1660px;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:18px;align-items:start}
 .wrap.agent-open>.hdr{grid-column:1 / -1}
 #agent-toggle.active{background:#3b82f6;color:#fff}
@@ -565,6 +570,18 @@ tr.total td{border-top:2px solid #3a4150;font-weight:650}
     <div class="cards" id="pf-cards"></div>
     <div class="panel" style="margin-top:16px">
       <h3>Portfolio Rollup</h3>
+      <div class="filters" id="pf-filters">
+        <select id="pf-f-property"><option value="">All properties</option></select>
+        <select id="pf-f-sort">
+          <option value="">Default order</option>
+          <option value="noi">Highest NOI</option>
+          <option value="occupancy">Lowest occupancy</option>
+          <option value="shortfall">Largest shortfall</option>
+        </select>
+        <input id="pf-f-q" type="text" placeholder="Search property or city…" style="min-width:180px">
+        <span class="count" id="pf-count"></span>
+        <button class="clear" id="pf-clear">Clear</button>
+      </div>
       <table>
         <thead><tr>
           <th>Property</th><th>Units</th><th>Occupancy</th>
@@ -594,6 +611,14 @@ tr.total td{border-top:2px solid #3a4150;font-weight:650}
     <div class="cards" id="ar-cards"></div>
     <div class="panel" style="margin-top:16px">
       <h3>Rent Roll vs Receipts — Exceptions</h3>
+      <div class="filters" id="ar-filters">
+        <select id="ar-f-status"><option value="">All statuses</option></select>
+        <select id="ar-f-property"><option value="">All properties</option></select>
+        <input id="ar-f-q" type="text" placeholder="Tenant or unit…" style="min-width:150px">
+        <input id="ar-f-min" type="number" step="100" placeholder="Min variance" style="width:120px">
+        <span class="count" id="ar-count"></span>
+        <button class="clear" id="ar-clear">Clear</button>
+      </div>
       <table>
         <thead><tr>
           <th>Unit</th><th>Tenant</th><th>Property</th>
@@ -611,6 +636,15 @@ tr.total td{border-top:2px solid #3a4150;font-weight:650}
     <div class="cards" id="ap-cards"></div>
     <div class="panel" style="margin-top:16px">
       <h3>Vendor Invoices vs Approved Work Orders — Exceptions</h3>
+      <div class="filters" id="ap-filters">
+        <select id="ap-f-status"><option value="">All statuses</option></select>
+        <select id="ap-f-property"><option value="">All properties</option></select>
+        <select id="ap-f-gl"><option value="">All GL accounts</option></select>
+        <input id="ap-f-q" type="text" placeholder="Vendor or invoice…" style="min-width:150px">
+        <input id="ap-f-min" type="number" step="100" placeholder="Min variance" style="width:120px">
+        <span class="count" id="ap-count"></span>
+        <button class="clear" id="ap-clear">Clear</button>
+      </div>
       <table>
         <thead><tr>
           <th>Invoice</th><th>Vendor</th><th>Property</th><th>GL</th>
@@ -628,6 +662,24 @@ tr.total td{border-top:2px solid #3a4150;font-weight:650}
     <div class="cards" id="wf-cards"></div>
     <div class="panel" style="margin-top:16px">
       <h3>Review Queue</h3>
+      <div class="filters" id="wf-filters">
+        <select id="wf-f-side">
+          <option value="">AR + AP</option>
+          <option value="AR">AR only</option>
+          <option value="AP">AP only</option>
+        </select>
+        <select id="wf-f-status"><option value="">All statuses</option></select>
+        <select id="wf-f-rec">
+          <option value="">Any recommendation</option>
+          <option value="approve">Approve</option>
+          <option value="reject">Reject</option>
+          <option value="escalate">Escalate</option>
+        </select>
+        <select id="wf-f-property"><option value="">All properties</option></select>
+        <input id="wf-f-min" type="number" step="100" placeholder="Min amount" style="width:120px">
+        <span class="count" id="wf-count"></span>
+        <button class="clear" id="wf-clear">Clear</button>
+      </div>
       <div id="wf-msg" class="muted">Run reconciliation to populate the queue.</div>
       <table id="wf-table" class="hidden">
         <thead><tr>
@@ -777,6 +829,82 @@ $('run-ap').onclick = () => {
   load('/api/reconcile/ap', {method:'POST', body});
 };
 
+// ---- Filters -------------------------------------------------------------
+// Each bar re-renders its table from the cached bundle, so changes are instant
+// and never refetch. Selection persists across reconciles.
+const F = {
+  pf: {property:'', sort:'', q:''},
+  ar: {status:'', property:'', q:'', min:''},
+  ap: {status:'', property:'', gl:'', q:'', min:''},
+  wf: {side:'', status:'', rec:'', property:'', min:''},
+};
+
+const val = id => ($(id) ? $(id).value.trim() : '');
+const uniq = a => [...new Set(a.filter(x => x !== '' && x != null))].sort();
+
+function fillSelect(id, values, allLabel) {
+  const el = $(id); if (!el) return;
+  const keep = el.value;
+  el.innerHTML = `<option value="">${allLabel}</option>` +
+    values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  el.value = values.includes(keep) ? keep : '';
+}
+
+function populateFilters(s) {
+  const props = (s.portfolio.properties || []).map(p => p.property_id);
+  const ar = (s.ar.results || []).filter(r => !CLEAN_AR.has(r.status));
+  const ap = (s.ap.results || []).filter(r => r.status !== 'matched');
+  const pend = s.pending || [];
+
+  ['pf-f-property','ar-f-property','ap-f-property','wf-f-property']
+    .forEach(id => fillSelect(id, props, 'All properties'));
+  fillSelect('ar-f-status', uniq(ar.map(r => r.status)), 'All statuses');
+  fillSelect('ap-f-status', uniq(ap.map(r => r.status)), 'All statuses');
+  fillSelect('ap-f-gl', uniq(ap.map(r => r.gl_account)), 'All GL accounts');
+  fillSelect('wf-f-status', uniq(pend.map(r => r.recon_status)), 'All statuses');
+}
+
+function matches(q, ...fields) {
+  if (!q) return true;
+  const needle = q.toLowerCase();
+  return fields.some(f => String(f ?? '').toLowerCase().includes(needle));
+}
+
+// "Min variance" compares magnitudes, so a -$400 overpayment counts as $400.
+const minHit = (raw, amount) =>
+  raw === '' || Math.abs(Number(amount) || 0) >= Math.abs(Number(raw) || 0);
+
+function count(id, shown, total) {
+  const el = $(id);
+  if (el) el.textContent = shown === total ? `${total} rows` : `showing ${shown} of ${total}`;
+}
+
+function readFilters(prefix) {
+  if (prefix === 'pf') {
+    F.pf = {property: val('pf-f-property'), sort: val('pf-f-sort'), q: val('pf-f-q')};
+  } else if (prefix === 'ar') {
+    F.ar = {status: val('ar-f-status'), property: val('ar-f-property'),
+            q: val('ar-f-q'), min: val('ar-f-min')};
+  } else if (prefix === 'ap') {
+    F.ap = {status: val('ap-f-status'), property: val('ap-f-property'),
+            gl: val('ap-f-gl'), q: val('ap-f-q'), min: val('ap-f-min')};
+  } else if (prefix === 'wf') {
+    F.wf = {side: val('wf-f-side'), status: val('wf-f-status'), rec: val('wf-f-rec'),
+            property: val('wf-f-property'), min: val('wf-f-min')};
+  }
+}
+
+function wireFilters(prefix) {
+  const sel = `#${prefix}-filters select, #${prefix}-filters input`;
+  const apply = () => { readFilters(prefix); render(); };
+  document.querySelectorAll(sel).forEach(el => { el.oninput = el.onchange = apply; });
+  const clear = $(`${prefix}-clear`);
+  if (clear) clear.onclick = () => {
+    document.querySelectorAll(sel).forEach(el => { el.value = ''; });
+    apply();
+  };
+}
+
 function card(k, v) { return `<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`; }
 
 function render() {
@@ -791,8 +919,24 @@ function render() {
     card('Portfolio NOI', MONEY(s.portfolio.portfolio.noi)),
   ].join('');
 
-  const rows = s.portfolio.properties.concat([s.portfolio.portfolio]);
-  $('pf-rows').innerHTML = rows.map(p => `
+  const allRows = s.portfolio.properties.concat([s.portfolio.portfolio]);
+  let rows = allRows.filter(p =>
+    (!F.pf.property || p.property_id === F.pf.property) &&
+    matches(F.pf.q, p.name, p.city, p.property_id));
+  if (F.pf.sort) {
+    const k = F.pf.sort;
+    const asc = k === 'occupancy';
+    rows = rows.slice().sort((a, b) => asc
+      ? (a.occupancy_rate - b.occupancy_rate)
+      : (b[k] - a[k]));
+  }
+  // Keep the portfolio total pinned to the bottom so it stays a reference line.
+  const totals = rows.filter(p => p.property_id === 'PORTFOLIO');
+  const detail = rows.filter(p => p.property_id !== 'PORTFOLIO');
+  const shown = detail.concat(totals);
+  count('pf-count', detail.length, allRows.length - 1);
+
+  $('pf-rows').innerHTML = shown.map(p => `
     <tr class="${p.property_id === 'PORTFOLIO' ? 'total' : ''}">
       <td>${esc(p.name)}</td>
       <td class="num">${p.units}</td>
@@ -825,8 +969,15 @@ function render() {
     card('Outstanding', MONEY(ars.shortfall)),
   ].join('');
 
-  $('ar-rows').innerHTML = s.ar.results
-    .filter(r => !CLEAN_AR.has(r.status))
+  const arAll = s.ar.results.filter(r => !CLEAN_AR.has(r.status));
+  const arShown = arAll.filter(r =>
+    (!F.ar.status || r.status === F.ar.status) &&
+    (!F.ar.property || r.property_id === F.ar.property) &&
+    matches(F.ar.q, r.tenant, r.unit, r.detail) &&
+    minHit(F.ar.min, r.variance));
+  count('ar-count', arShown.length, arAll.length);
+
+  $('ar-rows').innerHTML = arShown
     .map(r => `
     <tr>
       <td>${esc(r.unit)}</td>
@@ -838,7 +989,7 @@ function render() {
       <td class="num">${esc(r.days_late) || '<span class="muted">—</span>'}</td>
       <td><span class="badge ${BS[r.status]||'warn'}">${esc(r.status)}</span></td>
       <td>${esc(r.detail) || '<span class="muted">—</span>'}</td>
-    </tr>`).join('') || '<tr><td colspan="9" class="muted">No AR exceptions.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="9" class="muted">No AR exceptions match these filters.</td></tr>';
 
   // ---- AP ----
   const aps = s.ap.summary;
@@ -849,8 +1000,16 @@ function render() {
     card('Variance', MONEY(aps.variance)),
   ].join('');
 
-  $('ap-rows').innerHTML = s.ap.results
-    .filter(r => r.status !== 'matched')
+  const apAll = s.ap.results.filter(r => r.status !== 'matched');
+  const apShown = apAll.filter(r =>
+    (!F.ap.status || r.status === F.ap.status) &&
+    (!F.ap.property || r.property_id === F.ap.property) &&
+    (!F.ap.gl || r.gl_account === F.ap.gl) &&
+    matches(F.ap.q, r.vendor, r.invoice_number, r.detail) &&
+    minHit(F.ap.min, r.variance));
+  count('ap-count', apShown.length, apAll.length);
+
+  $('ap-rows').innerHTML = apShown
     .map(r => `
     <tr>
       <td>${esc(r.invoice_number)}</td>
@@ -862,7 +1021,9 @@ function render() {
       <td class="num ${Number(r.variance) > 0 ? 'neg' : 'pos'}">${MONEY(r.variance)}</td>
       <td><span class="badge ${BS[r.status]||'warn'}">${esc(r.status)}</span></td>
       <td>${esc(r.detail) || '<span class="muted">—</span>'}</td>
-    </tr>`).join('') || '<tr><td colspan="9" class="muted">No AP exceptions.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="9" class="muted">No AP exceptions match these filters.</td></tr>';
+
+  populateFilters(s);
 
   // ---- Workflow + financials, drawn from the same bundle so every tab is
   // populated on first paint instead of racing separate fetches ----
@@ -878,10 +1039,21 @@ function drawWorkflow(sum, pending) {
     card('Pending', sum.pending),
   ].join('');
 
+  const wfAll = pending || [];
+  const shown = wfAll.filter(r => {
+    const rev = r.review || {};
+    return (!F.wf.side || r.side === F.wf.side) &&
+      (!F.wf.status || r.recon_status === F.wf.status) &&
+      (!F.wf.rec || rev.recommendation === F.wf.rec) &&
+      (!F.wf.property || r.property_id === F.wf.property) &&
+      minHit(F.wf.min, r.amount);
+  });
+  count('wf-count', shown.length, wfAll.length);
+
   $('wf-msg').classList.add('hidden');
   $('wf-table').classList.remove('hidden');
 
-  $('wf-rows').innerHTML = (pending || []).map(r => {
+  $('wf-rows').innerHTML = shown.map(r => {
     const rev = r.review || {};
     const rec = rev.recommendation || '';
     const recClass = {approve:'ok', reject:'bad', escalate:'warn'}[rec] || 'auto';
@@ -1211,6 +1383,9 @@ load('/api/demo', {method:'POST'}).then(() => {
   loadWorkflow();
   loadFinancials();
 });
+
+// Filter bars: re-render from the cached bundle, no refetch.
+['pf','ar','ap','wf'].forEach(wireFilters);
 
 // Restore the dock if it was left open. Closed by default: full width until asked.
 try {

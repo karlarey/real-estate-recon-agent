@@ -69,7 +69,14 @@ def _decide(exception):
 
 
 def seed_workflow(ar_results, ap_results):
-    """Populate workflow state from both reconciliation result sets."""
+    """Populate workflow state from both reconciliation result sets.
+
+    Reseeds the RNG here rather than relying on the import-time seed: _decide()
+    draws from the same stream, so without this every reseed would continue from
+    wherever the last one stopped and the approved/rejected/pending mix would
+    drift per call -- eventually producing an empty review queue.
+    """
+    random.seed(99)
     _workflow.clear()
     for row in ar_results:
         _workflow[ar_key(row)] = _decide(row.get("status") not in CLEAN_AR)
