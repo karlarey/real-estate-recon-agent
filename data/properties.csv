@@ -1,0 +1,4 @@
+property_id,name,address,city,state,units,property_type
+PROP-01,Maple Ridge Apartments,1420 Maple Ridge Dr,Columbus,OH,24,Multifamily
+PROP-02,Cedar Point Townhomes,88 Cedar Point Ln,Dublin,OH,8,Townhome
+PROP-03,Elm Street Lofts,310 Elm St,Westerville,OH,6,Loft

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.git/
+.gitignore
+.venv/
+venv/
+.env
+ar_results.csv
+ap_results.csv
+README.md
+LICENSE
+Makefile
+run_all.py
+test_api.py
+check_env.py

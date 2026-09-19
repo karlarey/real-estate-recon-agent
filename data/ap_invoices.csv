@@ -1,0 +1,36 @@
+invoice_number,property_id,work_order_id,vendor,invoice_date,description,gl_account,expense_category,amount
+INV-9001,PROP-01,WO-17001,Precision Roofing Co,2026-03-15,Water service monthly,5200,Utilities,399.15
+INV-9002,PROP-01,WO-3002,Clearview Window Cleaning,2026-03-16,Property insurance premium,5400,TaxInsurance,2433.30
+INV-9003,PROP-01,WO-3003,Guardian Insurance Group,2026-02-21,Leasing commission,5300,Management,512.86
+INV-9004,PROP-01,WO-3004,Apex Property Management,2026-03-07,Patch drywall and paint,5100,Repairs,93.13
+INV-9005,PROP-01,WO-3005,Guardian Insurance Group,2026-03-26,Quarterly property tax,5400,TaxInsurance,2176.34
+INV-9006,PROP-01,WO-3006,Guardian Insurance Group,2026-02-06,Property insurance premium,5400,TaxInsurance,1644.75
+INV-9007,PROP-01,WO-3007,Citywide Water Utility,2026-03-03,Gas service monthly,5200,Utilities,132.93
+INV-9008,PROP-01,WO-3008,Citywide Water Utility,2026-02-13,Property management fee,5300,Management,1153.85
+INV-9009,PROP-01,WO-3009,Guardian Insurance Group,2026-03-29,Gas service monthly,5200,Utilities,198.15
+INV-9010,PROP-01,WO-3010,Citywide Water Utility,2026-02-15,Water service monthly,5200,Utilities,227.42
+INV-9011,PROP-01,WO-3011,Bright Spark Electric,2026-03-21,Common area electric,5200,Utilities,394.56
+INV-9012,PROP-01,WO-3012,Summit HVAC Services,2026-02-11,Fix leaking faucet,5100,Repairs,69.97
+INV-9013,PROP-01,WO-3013,metro power & light,2026-02-10,Gas service monthly,5200,Utilities,309.73
+INV-9014,PROP-01,WO-3014,Precision Roofing Co,2026-03-06,Quarterly property tax,5400,TaxInsurance,1657.22
+INV-9015,PROP-01,WO-3015,GreenLeaf Landscaping,2026-01-28,Replace water heater,5100,Repairs,424.25
+INV-9016,PROP-01,,Summit HVAC Services,2026-01-29,Water service monthly,5200,Utilities,565.52
+INV-9017,PROP-01,WO-3017,GreenLeaf Landscaping,2026-03-11,Property insurance premium,5400,TaxInsurance,1721.60
+INV-9018,PROP-01,WO-3018,Bright Spark Electric,2026-02-15,Fix leaking faucet,5100,Repairs,44.57
+INV-9019,PROP-02,WO-3019,Guardian Insurance Group,2026-03-22,Quarterly property tax,5400,TaxInsurance,858.78
+INV-9020,PROP-02,WO-3020,Apex Property Management,2026-01-18,Quarterly property tax,5400,TaxInsurance,726.36
+INV-9021,PROP-02,WO-3021,Apex Property Management,2026-03-09,Quarterly property tax,5400,TaxInsurance,1480.80
+INV-9022,PROP-02,WO-3022,Guardian Insurance Group,2026-02-02,Roof shingle repair,5100,Repairs,159.68
+INV-9023,PROP-02,WO-3023,Clearview Window Cleaning,2026-01-25,Patch drywall and paint,5100,Repairs,43.91
+INV-9024,PROP-02,WO-3024,Rapid Response Plumbing,2026-03-13,Quarterly property tax,5400,TaxInsurance,1083.48
+INV-9025,PROP-02,WO-3025,Clearview Window Cleaning,2026-03-01,Common area electric,5200,Utilities,113.44
+INV-9026,PROP-03,WO-3026,Metro Power & Light,2026-01-15,Replace water heater,5100,Repairs,135.69
+INV-9027,PROP-03,WO-3027,Bright Spark Electric,2026-02-23,Common area electric,5200,Utilities,59.51
+INV-9028,PROP-03,WO-3028,Rapid Response Plumbing,2026-01-21,Leasing commission,5300,Management,79.87
+INV-9029,PROP-03,WO-3029,Summit HVAC Services,2026-02-20,Quarterly property tax,5400,TaxInsurance,482.30
+INV-9030,PROP-03,WO-3030,Clearview Window Cleaning,2026-01-23,Quarterly property tax,5400,TaxInsurance,732.50
+INV-9031,PROP-03,WO-3031,Summit HVAC Services,2026-02-11,Quarterly property tax,5400,TaxInsurance,782.54
+INV-9032,PROP-03,WO-3032,Guardian Insurance Group,2026-01-30,Property insurance premium,5400,TaxInsurance,524.25
+INV-9022,PROP-02,WO-3022,Guardian Insurance Group,2026-02-02,Roof shingle repair,5100,Repairs,159.68
+INV-9002,PROP-01,WO-3002,Clearview Window Cleaning,2026-03-16,Property insurance premium,5400,TaxInsurance,2433.30
+INV-9032,PROP-03,WO-3032,Guardian Insurance Group,2026-01-30,Property insurance premium,5400,TaxInsurance,524.25

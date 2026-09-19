@@ -1,0 +1,45 @@
+# Portable demo: the app plus a local Llama, one command.
+#
+#   docker compose up
+#
+# Then open http://localhost:8000 and use the Assistant tab.
+#
+# Two services on purpose. Bundling the model into the app image would make a
+# multi-gigabyte image that rebuilds on every code change. Keeping Ollama
+# separate means the app image stays small and the model is pulled once, into a
+# named volume that survives rebuilds.
+#
+# The app still works if `ollama` never becomes healthy -- the Assistant tab
+# reports the model as offline and every other feature is unaffected.
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Reach the Ollama service by its compose name, not localhost.
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"          # exposed so you can also run `ollama` from the host
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+    # Uncomment to use an NVIDIA GPU (needs the NVIDIA container toolkit):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  ollama-models:

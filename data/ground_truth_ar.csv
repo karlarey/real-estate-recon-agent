@@ -1,0 +1,40 @@
+lease_id,receipt_id,unit,tenant,amount_due,amount_received,expected_status,note
+LSE-5001,RCP-7001,01-301,Tatum Reyes,1252.83,1252.83,paid_in_full,
+LSE-5002,RCP-7002,01-202,Oakley Grant,1053.26,996.08,rent_escalation_missed,paid base rent only; CAM 57.18 not collected
+LSE-5003,RCP-7003,01-303,Quinn Nguyen,1873.83,1873.83,paid_in_full,
+LSE-5004,RCP-7004,01-104,Indigo Lopez,1406.45,1406.45,paid_in_full,
+LSE-5006,RCP-7005,01-306,Riley Wong,2063.87,2063.87,paid_in_full,
+LSE-5007,RCP-7006,01-207,Skyler Lopez,2534.76,2534.76,paid_in_full,
+LSE-5008,RCP-7007,01-208,Oakley Hayes,1333.50,1333.50,paid_in_full,
+LSE-5009,RCP-7008,01-209,Riley Hayes,1566.72,1337.26,partial_payment,short pay of 229.46
+LSE-5010,RCP-7009,01-210,Rowan Vasquez,1645.29,1645.29,paid_in_full,
+LSE-5011,RCP-7010,01-311,Emerson Sullivan,1694.77,1694.77,paid_in_full,
+LSE-5012,,01-312,Riley Das,1602.64,0.00,non_payment,no receipt recorded for period
+LSE-5013,RCP-7012,01-113,Logan Quinn,2198.40,2198.40,paid_in_full,
+LSE-5014,,01-314,Emerson Vasquez,2244.62,0.00,non_payment,no receipt recorded for period
+LSE-5015,RCP-7014,01-215,Finley Vasquez,1684.39,1684.39,paid_in_full,
+LSE-5016,RCP-7015,01-116,Jordan Tran,1375.75,1375.75,paid_in_full,
+LSE-5017,RCP-7016,01-117,Parker Chen,1204.40,1204.40,paid_in_full,
+LSE-5018,RCP-7017,01-218,Quinn Ibrahim,2365.37,2365.37,paid_in_full,
+LSE-5019,RCP-7018,01-319,Skyler Lopez,1696.08,1696.08,paid_in_full,
+LSE-5020,RCP-7019,01-320,Oakley Hayes,1681.88,1681.88,paid_in_full,
+LSE-5022,RCP-7020,01-222,Parker Sullivan,1163.68,1037.35,partial_payment,short pay of 126.33
+LSE-5023,RCP-7021,01-223,Kendall Nguyen,2190.62,2190.62,paid_in_full,
+LSE-5025,RCP-7022,02-101,Emerson Owens,1415.28,1415.28,paid_in_full,
+LSE-5026,RCP-7023,02-102,Sage Fischer,1809.52,1809.52,paid_in_full,
+LSE-5027,RCP-7024,02-203,Logan Jensen,1357.07,1357.07,paid_in_full,
+LSE-5028,RCP-7025,02-304,Rowan Bennett,2545.61,3006.16,overpayment,overpayment of 460.55
+LSE-5029,RCP-7026,02-305,Nova Fischer,1124.16,1124.16,paid_in_full,
+LSE-5031,RCP-7027,02-207,Reese Chen,1284.58,1284.58,paid_in_full,
+LSE-5032,RCP-7028,02-308,Sage Ibrahim,1855.71,1855.71,paid_in_full,
+LSE-5034,RCP-7029,03-302,Indigo Jensen,2448.86,2448.86,paid_in_full,
+LSE-5036,RCP-7030,03-204,Oakley Ellis,2359.52,2359.52,paid_in_full,
+LSE-5037,RCP-7031,03-305,Riley Chen,1344.98,1344.98,paid_in_full,
+LSE-5038,RCP-7032,03-206,Quinn Owens,1102.29,818.87,partial_payment,short pay of 283.42
+,RCP-7033,ZZ-407,,0.00,1414.25,unmatched_receipt,receipt references a unit not on the rent roll
+LSE-5005,,01-105,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
+LSE-5021,,01-121,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
+LSE-5024,,01-324,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
+LSE-5030,,02-306,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
+LSE-5033,,03-301,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
+LSE-5035,,03-303,,0.00,0.00,vacant_no_charge,"unit vacant, no charge expected"
